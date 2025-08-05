@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Test your knowledge of Kenya</title>
+<style>
+  :root{
+    --black:#111; --red:#d43b44; --green:#169158; --muted:#666; --card:#fff;
+    --max-width:980px;
+  }
+  *{box-sizing:border-box}
+  body{font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:#f6faf6; color:#111; -webkit-font-smoothing:antialiased}
+  /* Banner: horizontal stripe with boxed label */
+  header.flag{height:84px;display:flex;align-items:center;justify-content:center;
+    background:
+      linear-gradient(90deg,
+        var(--black) 0 18%,
+        #ffffff 18% 20%,
+        var(--red) 20% 80%,
+        #ffffff 80% 82%,
+        var(--green) 82% 100%);
+    position:sticky; top:0; z-index:50; box-shadow:0 6px 18px rgba(0,0,0,0.06)
+  }
+  .banner-label{background:transparent;border:3px solid rgba(255,255,255,0.95);padding:8px 16px;border-radius:9px;color:#fff;font-weight:800;font-size:1.15rem;letter-spacing:0.5px}
+  .wrap{max-width:var(--max-width);margin:18px auto;padding:12px}
+  .card{background:var(--card);border-radius:10px;padding:14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(8,8,8,0.06)}
+  .center{display:flex;align-items:center;justify-content:center}
+  .col-center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  h1,h2{margin:0}
+  p.small{color:var(--muted);margin:8px 0 0;max-width:820px;text-align:center}
+  /* language select top-right of intro card */
+  .lang-wrap{position:absolute;right:14px;top:12px}
+  select{padding:6px;border-radius:6px;border:1px solid #ddd}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700;touch-action:manipulation}
+  .btn.ghost{background:#f0f0f0;color:#111}
+  .categories{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+  .cat-btn{padding:8px 12px;border-radius:999px;border:1px solid #e8e8e8;background:#fff;cursor:pointer;touch-action:manipulation}
+  .cat-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+  /* fun facts carousel */
+  .carousel{display:flex;align-items:center;justify-content:center;gap:10px}
+  .carousel-card{max-width:760px;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 14px rgba(0,0,0,0.04);text-align:center}
+  .carousel-tip{margin-top:8px;text-align:center;color:var(--muted);font-weight:600}
+  /* question area */
+  .progress-wrap{height:10px;background:#eee;border-radius:999px;overflow:hidden;margin:8px 0}
+  .progress{height:100%;background:linear-gradient(90deg,var(--green),#44c07a);width:0%}
+  .qbox{padding:12px;border-radius:8px;background:linear-gradient(#fff,#fbfff9)}
+  .question{font-weight:800;margin:0 0 12px;text-align:center}
+  .options{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .option{padding:12px;border-radius:8px;border:1px solid #e6e6e6;cursor:pointer;width:100%;max-width:760px;text-align:left;touch-action:manipulation}
+  .option.selected{border-color:var(--green);background:#f0fff4}
+  .hint-btn{background:#fff;border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .fact{background:#f7fff8;border-left:4px solid var(--green);padding:10px;border-radius:6px;margin-top:12px;font-size:0.95rem}
+  .actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px;flex-wrap:wrap}
+  .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .socials{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:8px;border:none;cursor:pointer}
+  .icon-btn.primary{background:var(--green);color:#fff}
+  .icon-btn.ghost{background:#eee;color:#111}
+  footer{margin-top:12px;text-align:center;color:var(--muted);padding:10px}
+  @media (max-width:820px){
+    .question{font-size:1rem}
+    .option{font-size:0.95rem}
+    .lang-wrap{position:static;margin-top:8px}
+  }
+</style>
+</head>
+<body>
+  <header class="flag">
+    <div class="banner-label">Kenya Trivia</div>
+  </header>
+
+  <div class="wrap">
+    <!-- Intro card -->
+    <div class="card" style="position:relative;padding-top:30px">
+      <div class="lang-wrap">
+        <label class="small" for="langSelect">Language</label><br>
+        <select id="langSelect" aria-label="Choose language"></select>
+      </div>
+
+      <div class="col-center" style="gap:10px">
+        <h1 id="title">Test your knowledge of Kenya</h1>
+        <p id="sub" style="font-weight:700;margin:6px 0 0">Short quizzes. Honest learning. Real Kenyan stories.</p>
+        <p class="small" id="intro">Curated questions from Kenya’s pre-colonial, colonial and modern eras — plus culture, language and food. Choose a category, pick a language, and press Start. Click an answer to advance; use Hint for helpful context.</p>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="startBtn" class="btn">Start 5-question run</button>
+          <button id="funBtn" class="btn ghost">Quick Fun Facts</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fun facts carousel -->
+    <div id="funWrap" class="card center" style="display:none;flex-direction:column">
+      <div class="carousel" style="margin-top:6px">
+        <button id="prevFact" class="btn ghost">◀</button>
+        <div id="carouselCard" class="carousel-card">Fun fact</div>
+        <button id="nextFact" class="btn ghost">▶</button>
+      </div>
+      <div class="carousel-tip" id="carouselTip">Sit back — the carousel will show tasty, surprising facts. Click arrows to explore faster.</div>
+    </div>
+
+    <!-- Categories -->
+    <div class="card center" style="flex-direction:column">
+      <div class="small">Choose a category — sample question appears immediately</div>
+      <div id="categoryRow" class="categories" style="margin-top:12px"></div>
+    </div>
+
+    <!-- Game area -->
+    <div id="gameArea" class="card" style="display:block;scroll-margin-top:80px">
+      <div class="progress-wrap"><div id="progress" class="progress"></div></div>
+
+      <div class="qbox">
+        <div class="question" id="questionText">Loading a sample question...</div>
+        <div id="options" class="options"></div>
+
+        <div style="display:flex;justify-content:center;gap:8px;margin-top:12px">
+          <button id="hintBtn" class="hint-btn">Hint</button>
+        </div>
+
+        <div class="actions">
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="prevBtn" class="btn ghost" disabled>Previous</button>
+            <button id="nextBtn" class="btn ghost" disabled>Next</button>
+            <button id="skipBtn" class="btn ghost">Skip (3/3)</button>
+          </div>
+
+          <div class="meta">
+            <div class="small">Q <span id="qIndex">0</span>/5</div>
+            <div class="small">Score: <span id="runningScore">0</span></div>
+          </div>
+        </div>
+
+        <div id="hintArea" class="fact" style="display:none"></div>
+      </div>
+
+      <div id="resultArea" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <footer>Made by Peter Jotham Matete (Bojack Msafiri) 2025</footer>
+  </div>
+
+<script>
+/* -------------------------
+  TRANSLATIONS: UI strings and full question translations
+  Languages: en, sw, fr, de, es, zh, ar, it
+--------------------------*/
+const LANGS = [
+  {code:'en', label:'English'},
+  {code:'sw', label:'Kiswahili'},
+  {code:'fr', label:'Français'},
+  {code:'de', label:'Deutsch'},
+  {code:'es', label:'Español'},
+  {code:'zh', label:'中文'},
+  {code:'ar', label:'العربية'},
+  {code:'it', label:'Italiano'}
+];
+
+const UI = {
+  en:{title:"Test your knowledge of Kenya", sub:"Short quizzes. Honest learning. Real Kenyan stories.", intro:"Curated questions from Kenya’s pre-colonial, colonial and modern eras — plus culture, language and food. Choose a category, pick a language, and press Start. Click an answer to advance; use Hint for helpful context.", start:"Start 5-question run", fun:"Quick Fun Facts", hint:"Hint", skipLabel:"Skip"},
+  sw:{title:"Jaribu maarifa yako kuhusu Kenya", sub:"Majibu mafupi. Kujifunza kwa uaminifu. Hadithi halisi za Kenya.", intro:"Maswali yaliyotayarishwa kuhusu enzi za kabla ya ukoloni, ukoloni na Kenya ya kisasa — pamoja na utamaduni, lugha na vyakula. Chagua kitengo, chagua lugha, kisha bonyeza Anza. Gusa jibu kusonga mbele; tumia Tip kwa muktadha.", start:"Anza mtihani wa maswali 5", fun:"Mambo ya Haraka", hint:"Tip", skipLabel:"Ruka"},
+  fr:{title:"Testez vos connaissances du Kenya", sub:"Quiz courts. Apprentissage sérieux. Récits kenyans authentiques.", intro:"Questions sélectionnées couvrant l’époque pré-coloniale, coloniale et moderne du Kenya — ainsi que culture, langue et gastronomie. Choisissez une catégorie, sélectionnez la langue et cliquez sur Démarrer. Cliquez sur une réponse pour avancer ; utilisez Indice pour du contexte.", start:"Démarrer 5 questions", fun:"Faits rapides", hint:"Indice", skipLabel:"Passer"},
+  de:{title:"Teste dein Wissen über Kenia", sub:"Kurze Quiz. Seriöses Lernen. Echte kenianische Geschichten.", intro:"Kuratierte Fragen zur vorkolonialen, kolonialen und modernen Zeit Kenias — sowie Kultur, Sprache und Essen. Wähle eine Kategorie, wähle eine Sprache und tippe auf Start. Antwort antippen, um fortzufahren; verwende den Hinweis für Kontext.", start:"10-Fragen-Test starten", fun:"Schnelle Fakten", hint:"Hinweis", skipLabel:"Überspringen"},
+  es:{title:"Pon a prueba tus conocimientos de Kenia", sub:"Cuestionarios breves. Aprendizaje sincero. Historias reales de Kenia.", intro:"Preguntas seleccionadas sobre las épocas precolonial, colonial y moderna de Kenia, además de cultura, idioma y gastronomía. Elige categoría, idioma y pulsa Iniciar. Pulsa una respuesta para continuar; usa Pista para contexto.", start:"Iniciar prueba de 5 preguntas", fun:"Datos rápidos", hint:"Pista", skipLabel:"Saltar"},
+  zh:{title:"测试你对肯尼亚的了解", sub:"简短测验。认真学习。真实的肯尼亚故事。", intro:"精选题目涵盖肯尼亚殖民前、殖民期和现代史，以及文化、语言和美食。选择类别、选择语言，然后点击开始。点击答案前进；使用提示获取背景信息。", start:"开始 5 题", fun:"快速事实", hint:"提示", skipLabel:"跳过"},
+  ar:{title:"اختبر معرفتك بكينيا", sub:"اختبارات قصيرة. تعلم موضوعي. قصص كينية حقيقية.", intro:"أسئلة مختارة تغطي فترات ما قبل الاستعمار، الاستعمار والحقبة الحديثة في كينيا — بالإضافة إلى الثقافة واللغة والطعام. اختر الفئة، اختر اللغة، ثم اضغط ابدأ. اضغط على إجابة للتقدم؛ استخدم التلميح للسياق.", start:"ابدأ اختبار 5 أسئلة", fun:"حقائق سريعة", hint:"تلميح", skipLabel:"تخطي"},
+  it:{title:"Metti alla prova le tue conoscenze sul Kenya", sub:"Quiz brevi. Apprendimento serio. Storie kenyote autentiche.", intro:"Domande curate sulle epoche pre-coloniale, coloniale e moderna del Kenya — oltre a cultura, lingua e cibo. Scegli una categoria, imposta la lingua e premi Avvia. Clicca una risposta per procedere; usa Suggerimento per contesto.", start:"Avvia test da 5 domande", fun:"Fatti rapidi", hint:"Suggerimento", skipLabel:"Salta"}
+};
+
+/* ---- Questions DB
+   We'll provide 5 questions per category (History, Food, Geography, Language, Sheng).
+   Each question has translations per language in q.translations: {en:..., sw:..., ...}
+   Structure:
+   { id, category, translations:{lang:{q, options:[..], hint}}, answerIndex }
+*/
+const QUESTIONS = [
+  /* History (5) */
+  {id:101, category:'History', answer:0, translations:{
+    en:{q:"Who led the Nandi resistance against colonial forces?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"He was killed in 1905."},
+    sw:{q:"Nani aliongoza upinzani wa Nandi dhidi ya wakoloni?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"Aliuawa mwaka 1905."},
+    fr:{q:"Qui a dirigé la résistance Nandi contre les coloniaux ?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"Il fut tué en 1905."},
+    de:{q:"Wer führte den Nandi-Widerstand gegen die Kolonialmächte an?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"Er wurde 1905 getötet."},
+    es:{q:"¿Quién lideró la resistencia Nandi contra los colonizadores?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"Fue asesinado en 1905."},
+    zh:{q:"谁领导了南迪人反抗殖民者？", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"他于1905年被杀。"},
+    ar:{q:"من قاد مقاومة ناندي ضد القوات الاستعمارية؟", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"قُتل في عام 1905."},
+    it:{q:"Chi guidò la resistenza Nandi contro i coloni?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Jaramogi Oginga Odinga"], hint:"Fu ucciso nel 1905."}
+  }},
+  {id:102, category:'History', answer:1, translations:{
+    en:{q:"Which leader was executed in 1957 for leading the Mau Mau uprising?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"He is a symbol of the Mau Mau movement."},
+    sw:{q:"Ni kiongozi gani alifungwa kifo 1957 kwa kuongoza uasi wa Mau Mau?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"Alikuwa alama ya harakati ya Mau Mau."},
+    fr:{q:"Quel dirigeant a été exécuté en 1957 pour avoir mené la révolte Mau Mau ?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"Il est un symbole du mouvement Mau Mau."},
+    de:{q:"Welcher Führer wurde 1957 für die Führung des Mau-Mau-Aufstands hingerichtet?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"Er ist ein Symbol der Mau-Mau-Bewegung."},
+    es:{q:"¿Qué dirigente fue ejecutado en 1957 por liderar el levantamiento Mau Mau?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"Es un símbolo del movimiento Mau Mau."},
+    zh:{q:"哪位领导人在1957年因领导茅茅起义而被处决？", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"他是茅茅运动的象征。"},
+    ar:{q:"أي زعيم أُعدم في عام 1957 لقيادته انتفاضة الماو ماو؟", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"هو رمز لحركة الماو ماو."},
+    it:{q:"Quale leader fu giustiziato nel 1957 per aver guidato l'insurrezione Mau Mau?", options:["Koitalel arap Samoei","Dedan Kimathi","Jomo Kenyatta","Ronald Ngala"], hint:"È un simbolo del movimento Mau Mau."}
+  }},
+  {id:103, category:'History', answer:2, translations:{
+    en:{q:"Who became Kenya's first president at independence in 1963?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"He is often called the Father of the Nation."},
+    sw:{q:"Nani aliyetangazwa kuwa rais wa kwanza wa Kenya wakati wa uhuru 1963?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"Hujulikana kama Baba wa Taifa."},
+    fr:{q:"Qui est devenu le premier président du Kenya à l'indépendance en 1963 ?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"On l'appelle souvent le Père de la Nation."},
+    de:{q:"Wer wurde 1963 beim Unabhängigwerden Kenias erster Präsident?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"Er wird oft Vater der Nation genannt."},
+    es:{q:"¿Quién se convirtió en el primer presidente de Kenia en 1963?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"A menudo llamado Padre de la Nación."},
+    zh:{q:"谁在1963年独立时成为肯尼亚第一任总统？", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"他常被称为国父。"},
+    ar:{q:"من أصبح أول رئيس لكينيا عند الاستقلال عام 1963؟", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"غالبًا ما يُدعى أب الأمة."},
+    it:{q:"Chi divenne il primo presidente del Kenya all'indipendenza nel 1963?", options:["Mwai Kibaki","Daniel arap Moi","Jomo Kenyatta","Tom Mboya"], hint:"È spesso chiamato Padre della Nazione."}
+  }},
+  {id:104, category:'History', answer:3, translations:{
+    en:{q:"Which politician and trade unionist founded many post-independence trade unions and was influential in early politics?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"He was assassinated in 1969 and was a major figure."},
+    sw:{q:"Ni mwanasiasa na mtetezi wa wafanyakazi gani aliyeteua haswa vyama vya wafanyakazi baada ya uhuru?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"Aliuwawa 1969 na alikuwa mtu maarufu."},
+    fr:{q:"Quel politicien et syndicaliste a fondé de nombreux syndicats après l'indépendance ?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"Il a été assassiné en 1969."},
+    de:{q:"Welcher Politiker und Gewerkschafter gründete viele Gewerkschaften nach der Unabhängigkeit?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"Er wurde 1969 ermordet."},
+    es:{q:"¿Qué político y sindicalista fundó muchos sindicatos tras la independencia?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"Fue asesinado en 1969."},
+    zh:{q:"哪位政治家和工会领袖在独立后创立了许多工会？", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"他在1969年被暗杀。"},
+    ar:{q:"أي سياسي والنقابي أسس العديد من النقابات بعد الاستقلال وكان مؤثراً؟", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"اغتيل عام 1969."},
+    it:{q:"Quale politico e sindacalista fondò molti sindacati dopo l'indipendenza?", options:["Kibaki","Oginga Odinga","Kenyatta","Tom Mboya"], hint:"Fu assassinato nel 1969."}
+  }},
+  {id:105, category:'History', answer:0, translations:{
+    en:{q:"'Harambee' is best described as:", options:["A call for collective effort","A type of food","A political party","A traditional dance"], hint:"Often used to start community projects."},
+    sw:{q:"'Harambee' ni nini kwa kawaida?", options:["Wito wa juhudi za pamoja","Aina ya chakula","Chama cha siasa","Ngoma ya jadi"], hint:"Inatumiwa kuanzisha miradi ya jamii."},
+    fr:{q:"'Harambee' se décrit le mieux comme :", options:["Un appel à l'effort collectif","Un type de nourriture","Un parti politique","Une danse traditionnelle"], hint:"Souvent utilisé pour démarrer des projets communautaires."},
+    de:{q:"'Harambee' lässt sich am besten beschreiben als:", options:["Ein Aufruf zur gemeinsamen Anstrengung","Eine Art von Essen","Eine politische Partei","Ein traditioneller Tanz"], hint:"Wird oft verwendet, um Gemeinschaftsprojekte zu starten."},
+    es:{q:"'Harambee' se describe mejor como:", options:["Un llamado al esfuerzo colectivo","Un tipo de comida","Un partido político","Una danza tradicional"], hint:"Se usa a menudo para iniciar proyectos comunitarios."},
+    zh:{q:"“Harambee” 最好描述为：", options:["号召集体努力","一种食物","一个政党","一种传统舞蹈"], hint:"经常用于发起社区项目。"},
+    ar:{q:"كيف يوصف 'حرامبي' بشكل أفضل:", options:["نداء للجهد الجماعي","نوع من الطعام","حزب سياسي","رقصة تقليدية"], hint:"غالبًا ما يستخدم لبدء مشاريع المجتمع."},
+    it:{q:"'Harambee' è meglio descritto come:", options:["Un appello allo sforzo collettivo","Un tipo di cibo","Un partito politico","Una danza tradizionale"], hint:"Spesso usato per avviare progetti comunitari."}
+  }},
+
+  /* Food (5) */
+  {id:201, category:'Food', answer:0, translations:{
+    en:{q:"Which dish is commonly considered Kenya's staple?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Made from maize (corn) flour."},
+    sw:{q:"Ni mlo gani unaochukuliwa kama chakula cha taifa?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Utatengenezwa kwa unga wa mahindi."},
+    fr:{q:"Quel plat est considéré comme la base du Kenya ?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Fait à partir de farine de maïs."},
+    de:{q:"Welches Gericht gilt als Grundnahrungsmittel Kenias?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Hergestellt aus Maismehl."},
+    es:{q:"¿Qué plato se considera el alimento básico de Kenia?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Hecho de harina de maíz."},
+    zh:{q:"哪种菜被认为是肯尼亚的主食？", options:["乌加利 (Ugali)","皮劳 (Pilau)","查帕蒂 (Chapati)","吉特里 (Githeri)"], hint:"由玉米粉制成。"},
+    ar:{q:"أي طبق يعتبر غذاءً أساسياً في كينيا؟", options:["أوغالِي","بيلوا","تشباتي","جيثيري"], hint:"مصنوع من دقيق الذرة."},
+    it:{q:"Quale piatto è comunemente considerato la base del Kenya?", options:["Ugali","Pilau","Chapati","Githeri"], hint:"Fatto con farina di mais."}
+  }},
+  {id:202, category:'Food', answer:3, translations:{
+    en:{q:"What is 'Nyama choma'?", options:["A type of stew","A breakfast porridge","A sweet snack","Grilled meat"], hint:"It's a social dish often eaten with friends."},
+    sw:{q:"'Nyama choma' ni nini?", options:["Aina ya mchuzi","Unga wa kiamsha kinywa","Kitafunwa tamu","Nyama iliyooka (grilled)"], hint:"Huliwa kwa kawaida na marafiki."},
+    fr:{q:"Qu'est-ce que le 'Nyama choma' ?", options:["Un type de ragoût","Un porridge du matin","Une collation sucrée","Viande grillée"], hint:"Plat social souvent partagé entre amis."},
+    de:{q:"Was ist 'Nyama choma'?", options:["Eine Art Eintopf","Ein Frühstücksbrei","Ein süßer Snack","Gegrilltes Fleisch"], hint:"Wird oft in Gesellschaft gegessen."},
+    es:{q:"¿Qué es 'Nyama choma'?", options:["Un tipo de guiso","Una gachas de desayuno","Un bocadillo dulce","Carne a la parrilla"], hint:"Plato social que se come con amigos."},
+    zh:{q:"“Nyama choma” 是什么？", options:["一种炖菜","早餐粥","甜点","烤肉"], hint:"常与朋友一起享用的社交菜肴。"},
+    ar:{q:"ما هو 'Nyama choma'؟", options:["نوع من الحساء","عصيدة للإفطار","وجبة خفيفة حلوة","لحم مشوي"], hint:"طبق اجتماعي يؤكل غالبًا مع الأصدقاء."},
+    it:{q:"Cos'è 'Nyama choma'?", options:["Un tipo di stufato","Porridge per colazione","Uno snack dolce","Carne alla griglia"], hint:"Piatto sociale spesso gustato con amici."}
+  }},
+  {id:203, category:'Food', answer:2, translations:{
+    en:{q:"What side dish is typically served with nyama choma?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"It's a tomato-onion salad."},
+    sw:{q:"Ni mlo gani wa pembeni unaotolewa kwa kawaida na nyama choma?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"Ni saladi ya nyanya na vitunguu."},
+    fr:{q:"Quel accompagnement est généralement servi avec le nyama choma ?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"C'est une salade tomate-oignon."},
+    de:{q:"Welche Beilage wird typischerweise mit Nyama choma serviert?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"Es ist ein Tomaten-Zwiebel-Salat."},
+    es:{q:"¿Qué guarnición se sirve típicamente con nyama choma?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"Es una ensalada de tomate y cebolla."},
+    zh:{q:"通常与 nyama choma 一起供应的配菜是什么？", options:["乌加利","吉特里","卡春巴里 (Kachumbari)","曼达齐"], hint:"这是番茄洋葱沙拉。"},
+    ar:{q:"ما الطبق الجانبي الذي يقدم عادة مع nyama choma؟", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"إنها سلطة طماطم وبصل."},
+    it:{q:"Quale contorno è tipicamente servito con nyama choma?", options:["Ugali","Githeri","Kachumbari","Mandazi"], hint:"È un'insalata di pomodori e cipolle."}
+  }},
+  {id:204, category:'Food', answer:1, translations:{
+    en:{q:"Which beverage is Kenya a major producer of?", options:["Black tea","Green soft drink","Cocoa","Vodka"], hint:"Kenya is known for high-quality black tea."},
+    sw:{q:"Ni kinywaji gani Kenya inatengeneza kwa kiasi kikubwa?", options:["Chai nyeusi","Kinywaji kijani","Kakao","Vodka"], hint:"Kenya inajulikana kwa chai nyeusi ya ubora."},
+    fr:{q:"Quel breuvage le Kenya produit-il en grande quantité ?", options:["Thé noir","Boisson verte","Cacao","Vodka"], hint:"Le Kenya est connu pour son thé noir de qualité."},
+    de:{q:"Welches Getränk produziert Kenia in großem Umfang?", options:["Schwarzer Tee","Grünes Erfrischungsgetränk","Kakao","Wodka"], hint:"Kenia ist bekannt für hochwertigen schwarzen Tee."},
+    es:{q:"¿Qué bebida produce Kenya en gran cantidad?", options:["Té negro","Bebida verde","Cacao","Vodka"], hint:"Kenia es conocida por su té negro de alta calidad."},
+    zh:{q:"肯尼亚大量生产哪种饮料？", options:["红茶","绿色软饮","可可","伏特加"], hint:"肯尼亚以高品质红茶著称。"},
+    ar:{q:"أي مشروب تنتج كينيا كميات كبيرة منه؟", options:["الشاي الأسود","مشروب أخضر","الكاكاو","الفودكا"], hint:"كينيا معروفة بالشاي الأسود عالي الجودة."},
+    it:{q:"Quale bevanda è prodotta in grande quantità in Kenya?", options:["Tè nero","Bevanda verde","Cacao","Vodka"], hint:"Il Kenya è noto per il tè nero di alta qualità."}
+  }},
+  {id:205, category:'Food', answer:0, translations:{
+    en:{q:"What is 'Githeri'?", options:["A mix of maize and beans","A fish dish","A sweet pastry","A spicy sauce"], hint:"Common home-cooked dish, nutritious and simple."},
+    sw:{q:"Githeri ni nini?", options:["Mchanganyiko wa mahindi na maharagwe","Sahani ya samaki","Mkate tamu","Sosisi yenye pilipili"], hint:"Mlo wa nyumbani, wenye lishe na rahisi."},
+    fr:{q:"Qu'est-ce que le 'Githeri' ?", options:["Un mélange de maïs et de haricots","Un plat de poisson","Une pâtisserie sucrée","Une sauce épicée"], hint:"Plat simple et nutritif, courant chez soi."},
+    de:{q:"Was ist 'Githeri'?", options:["Eine Mischung aus Mais und Bohnen","Ein Fischgericht","Ein süßes Gebäck","Eine würzige Soße"], hint:"Ein nahrhaftes, einfaches Hausgericht."},
+    es:{q:"¿Qué es 'Githeri'?", options:["Una mezcla de maíz y frijoles","Un plato de pescado","Un pastel dulce","Una salsa picante"], hint:"Plato casero nutritivo y sencillo."},
+    zh:{q:"什么是 Githeri？", options:["玉米和豆子的混合物","鱼菜","甜点","辣酱"], hint:"常见的家常菜，营养且简单。"},
+    ar:{q:"ما هو 'Githeri'؟", options:["مزيج من الذرة والفاصوليا","طبق سمك","معجنات حلوة","صلصة حارة"], hint:"طبق منزلي شائع ومغذٍ وبسيط."},
+    it:{q:"Cos'è il 'Githeri'?", options:["Un mix di mais e fagioli","Un piatto di pesce","Una pasta dolce","Una salsa speziata"], hint:"Piatto casalingo nutriente e semplice."}
+  }},
+
+  /* Geography (5) */
+  {id:301, category:'Geography', answer:0, translations:{
+    en:{q:"Which county is the largest by area in Kenya?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Located in the north, largely arid."},
+    sw:{q:"Ni kaunti gani kubwa kwa eneo nchini Kenya?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Iko kaskazini; sehemu kubwa ni nyasi/ukame."},
+    fr:{q:"Quel comté est le plus grand en superficie au Kenya ?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Situé au nord, en grande partie aride."},
+    de:{q:"Welcher County ist flächenmäßig der größte in Kenia?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Liegt im Norden, überwiegend trocken."},
+    es:{q:"¿Qué condado es el más grande por área en Kenia?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Situado en el norte, mayormente árido."},
+    zh:{q:"肯尼亚面积最大的县是哪个？", options:["图尔卡纳 (Turkana)","内罗毕 (Nairobi)","蒙巴萨 (Mombasa)","基苏木 (Kisumu)"], hint:"位于北部，大部分为干旱区。"},
+    ar:{q:"أي مقاطعة هي الأكبر مساحة في كينيا؟", options:["توركانا","نيروبي","مومباسا","كيسومو"], hint:"تقع في الشمال وغالبًا ما تكون جافة."},
+    it:{q:"Quale contea è la più grande per superficie in Kenya?", options:["Turkana","Nairobi","Mombasa","Kisumu"], hint:"Si trova a nord, in gran parte arida."}
+  }},
+  {id:302, category:'Geography', answer:2, translations:{
+    en:{q:"Which city is a major port on the Indian Ocean in Kenya?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Famous for Fort Jesus and coastal culture."},
+    sw:{q:"Ni mji gani una bandari kubwa baharini Kenya?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Maarufu kwa Fort Jesus na utamaduni wa pwani."},
+    fr:{q:"Quelle ville est un grand port sur l'océan Indien au Kenya ?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Connue pour Fort Jesus et la culture côtière."},
+    de:{q:"Welche Stadt ist ein wichtiger Hafen am Indischen Ozean in Kenia?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Berühmt für Fort Jesus und Küstenkultur."},
+    es:{q:"¿Qué ciudad es un importante puerto en el Océano Índico en Kenia?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Famosa por Fort Jesus y la cultura costera."},
+    zh:{q:"哪个城市是肯尼亚印度洋上的重要港口？", options:["纳库鲁 (Nakuru)","埃尔多雷特 (Eldoret)","蒙巴萨 (Mombasa)","基苏木 (Kisumu)"], hint:"以耶稣堡和海岸文化闻名。"},
+    ar:{q:"أي مدينة هي ميناء رئيسي على المحيط الهندي في كينيا؟", options:["ناكورو","إلدوريت","مومباسا","كيسومو"], hint:"مشهور بقلعة فورت جيسوس وثقافة الساحل."},
+    it:{q:"Quale città è un importante porto sull'Oceano Indiano in Kenya?", options:["Nakuru","Eldoret","Mombasa","Kisumu"], hint:"Famosa per Fort Jesus e la cultura costiera."}
+  }},
+  {id:303, category:'Geography', answer:3, translations:{
+    en:{q:"Which city sits on the shores of Lake Victoria?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Kenyan city on Africa's largest lake."},
+    sw:{q:"Ni mji gani uliopo kando ya Ziwa Victoria?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Mji wa Kenya kwenye ziwa kubwa barani Afrika."},
+    fr:{q:"Quelle ville se situe sur les rives du lac Victoria ?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Ville kenyane au bord du plus grand lac d'Afrique."},
+    de:{q:"Welche Stadt liegt am Ufer des Viktoriasees?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Kenia Stadt am größten See Afrikas."},
+    es:{q:"¿Qué ciudad se encuentra a orillas del Lago Victoria?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Ciudad keniata junto al lago más grande de África."},
+    zh:{q:"哪个城市坐落在维多利亚湖畔？", options:["内罗毕","蒙巴萨","埃尔多雷特","基苏木"], hint:"肯尼亚城市，位于非洲最大的湖泊。"},
+    ar:{q:"أي مدينة تقع على ضفاف بحيرة فيكتوريا؟", options:["نيروبي","مومباسا","إلدوريت","كيسومو"], hint:"مدينة كينية على أكبر بحيرة في أفريقيا."},
+    it:{q:"Quale città si trova sulle rive del Lago Vittoria?", options:["Nairobi","Mombasa","Eldoret","Kisumu"], hint:"Città keniota sul più grande lago dell'Africa."}
+  }},
+  {id:304, category:'Geography', answer:1, translations:{
+    en:{q:"Which town is famous for long-distance runners and high altitude training?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Highland town that produces champions."},
+    sw:{q:"Ni mji gani unaojulikana kwa wanariadha wa umbali marefu?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Mji wa milima unaotoa mabingwa."},
+    fr:{q:"Quelle ville est célèbre pour les coureurs de fond et l'entraînement en altitude ?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Ville d'altitude produisant champions."},
+    de:{q:"Welche Stadt ist berühmt für Langstreckenläufer und Höhentraining?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Hochlandstadt mit Champions."},
+    es:{q:"¿Qué ciudad es famosa por sus corredores de larga distancia y entrenamiento en altura?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Ciudad de gran altitud que produce campeones."},
+    zh:{q:"哪个小镇以长跑运动员和高海拔训练著称？", options:["纳库鲁","埃尔多雷特","蒙巴萨","奈瓦沙"], hint:"高原小镇，走出许多冠军。"},
+    ar:{q:"أي مدينة تشتهر بعدائي المسافات الطويلة والتدريب على ارتفاعات عالية؟", options:["ناكورو","إلدوريت","مومباسا","نايواشا"], hint:"مدينة في المرتفعات تُنتج أبطالًا."},
+    it:{q:"Quale città è famosa per i corridori di lunga distanza e l'allenamento in quota?", options:["Nakuru","Eldoret","Mombasa","Naivasha"], hint:"Città in altopiano che produce campioni."}
+  }},
+  {id:305, category:'Geography', answer:0, translations:{
+    en:{q:"Where is the Kakamega Forest located?", options:["Western Kenya","Eastern Kenya","Northern Kenya","Central Kenya"], hint:"It's Kenya's tropical rainforest region."},
+    sw:{q:"Msitu wa Kakamega uko wapi?", options:["Magharibi mwa Kenya","Mashariki mwa Kenya","Kaskazini mwa Kenya","Kati mwa Kenya"], hint:"Ni msitu wa mvua wa tropiki wa Kenya."},
+    fr:{q:"Où se situe la forêt de Kakamega ?", options:["Ouest du Kenya","Est du Kenya","Nord du Kenya","Centre du Kenya"], hint:"C'est la forêt tropicale du Kenya."},
+    de:{q:"Wo liegt der Kakamega-Wald?", options:["Westkenia","Ostkenia","Nordkenia","Zentralkenia"], hint:"Kenias tropischer Regenwald."},
+    es:{q:"¿Dónde se encuentra el Bosque Kakamega?", options:["Oeste de Kenia","Este de Kenia","Norte de Kenia","Centro de Kenia"], hint:"Es la región de selva tropical de Kenia."},
+    zh:{q:"卡卡梅加森林位于哪里？", options:["肯尼亚西部","肯尼亚东部","肯尼亚北部","肯尼亚中部"], hint:"是肯尼亚的热带雨林地区。"},
+    ar:{q:"أين يقع غابة كاكاميغا؟", options:["غرب كينيا","شرق كينيا","شمال كينيا","وسط كينيا"], hint:"هي غابة استوائية في كينيا."},
+    it:{q:"Dove si trova la Foresta di Kakamega?", options:["Kenya occidentale","Kenya orientale","Kenya settentrionale","Kenya centrale"], hint:"È la foresta pluviale tropicale del Kenya."}
+  }},
+
+  /* Language (5) */
+  {id:401, category:'Language', answer:0, translations:{
+    en:{q:"What language is commonly used as a lingua franca across Kenya?", options:["Swahili","Kikuyu","Luo","Kalenjin"], hint:"Also an official language."},
+    sw:{q:"Lugha gani hutumika kama lugha ya mawasiliano nchini Kenya?", options:["Kiswahili","Kikuyu","Luo","Kalenjin"], hint:"pia ni lugha rasmi."},
+    fr:{q:"Quelle langue est couramment utilisée comme lingua franca au Kenya ?", options:["Swahili","Kikuyu","Luo","Kalenjin"], hint:"Également langue officielle."},
+    de:{q:"Welche Sprache wird in Kenia häufig als Verkehrssprache verwendet?", options:["Suaheli","Kikuyu","Luo","Kalenjin"], hint:"Auch Amtssprache."},
+    es:{q:"¿Qué idioma se usa comúnmente como lengua franca en Kenia?", options:["Swahili","Kikuyu","Luo","Kalenjin"], hint:"También es idioma oficial."},
+    zh:{q:"在肯尼亚普遍用作通用语的是哪种语言？", options:["斯瓦西里语 (Swahili)","基库尤语","卢奥语","卡伦金语"], hint:"也是官方语言之一。"},
+    ar:{q:"ما اللغة المستخدمة كلغة تقريبية في كينيا؟", options:["السواحلية","كيكيو","لوو","كالينجين"], hint:"هي أيضاً لغة رسمية."},
+    it:{q:"Quale lingua è comunemente usata come lingua franca in Kenya?", options:["Swahili","Kikuyu","Luo","Kalenjin"], hint:"È anche lingua ufficiale."}
+  }},
+  {id:402, category:'Language', answer:0, translations:{
+    en:{q:"What is 'Sheng'?", options:["An urban mixed dialect of Swahili and English","A traditional song style","A dance","A type of food"], hint:"Commonly used in Nairobi youth culture."},
+    sw:{q:"Sheng ni nini?", options:["Lugha mchanganyiko ya Kiswahili na Kiingereza","Mtindo wa nyimbo za jadi","Ngoma","Aina ya chakula"], hint:"Inatumika kwa vijana wa Nairobi."},
+    fr:{q:"Qu'est-ce que le 'Sheng' ?", options:["Un dialecte urbain mélangeant swahili et anglais","Un style de chant traditionnel","Une danse","Un plat"], hint:"Courant chez les jeunes de Nairobi."},
+    de:{q:"Was ist 'Sheng'?", options:["Ein urbaner Dialekt aus Suaheli und Englisch","Ein traditioneller Musikstil","Ein Tanz","Eine Speise"], hint:"In der Jugendkultur Nairobis verbreitet."},
+    es:{q:"¿Qué es 'Sheng'?", options:["Un dialecto urbano mixto de swahili e inglés","Un estilo de canción tradicional","Un baile","Un tipo de comida"], hint:"Común entre la juventud de Nairobi."},
+    zh:{q:"什么是 Sheng？", options:["斯瓦西里语和英语的城市混合方言","传统歌唱风格","舞蹈","一种食物"], hint:"常见于内罗毕青年文化。"},
+    ar:{q:"ما هو 'شينغ'؟", options:["لهجة حضرية مزيجة من السواحيلية والإنجليزية","نوع من الغناء التقليدي","رقصة","نوع من الطعام"], hint:"شائع بين شباب نيروبي."},
+    it:{q:"Cos'è lo 'Sheng'?", options:["Un dialetto urbano misto di swahili e inglese","Uno stile di canzone tradizionale","Una danza","Un tipo di cibo"], hint:"Comune tra i giovani di Nairobi."}
+  }},
+  {id:403, category:'Language', answer:0, translations:{
+    en:{q:"What does 'Harambee' literally encourage?", options:["Collective self-help","Individual work","Silence","Exile"], hint:"Used to rally community projects."},
+    sw:{q:"'Harambee' inahamasisha nini?", options:["Kujitolea kwa pamoja","Kazi binafsi","Kuwa kimya","Kuondoka"], hint:"Kutumika kwa miradi ya jamii."},
+    fr:{q:"'Harambee' encourage littéralement quoi ?", options:["L'entraide collective","Le travail individuel","Le silence","L'exil"], hint:"Utilisé pour rassembler les projets communautaires."},
+    de:{q:"Wozu ermutigt 'Harambee' wörtlich?", options:["Gemeinsame Selbsthilfe","Einzelarbeit","Schweigen","Exil"], hint:"Wird zur Mobilisierung von Gemeinschaftsprojekten verwendet."},
+    es:{q:"¿Qué fomenta 'Harambee' literalmente?", options:["Autoayuda colectiva","Trabajo individual","Silencio","Exilio"], hint:"Se usa para reunir proyectos comunitarios."},
+    zh:{q:"“Harambee” 字面上鼓励什么？", options:["集体互助","个人工作","沉默","流放"], hint:"用于动员社区项目。"},
+    ar:{q:"ماذا يشجع 'حرامبي' حرفيًا؟", options:["المساعدة الذاتية الجماعية","العمل الفردي","الصمت","النفي"], hint:"يستخدم لتحفيز مشاريع المجتمع."},
+    it:{q:"Cosa incoraggia letteralmente 'Harambee'?", options:["Auto-aiuto collettivo","Lavoro individuale","Silenzio","Esilio"], hint:"Usato per radunare progetti comunitari."}
+  }},
+  {id:404, category:'Language', answer:3, translations:{
+    en:{q:"Which is an official language of Kenya besides English?", options:["Kikuyu","Luo","French","Swahili"], hint:"Widely spoken and used in media."},
+    sw:{q:"Lugha gani ni rasmi nchini Kenya ikitokea nje ya Kiingereza?", options:["Kikuyu","Luo","Kifaransa","Kiswahili"], hint:"Inazungumzwa sana na kutumika kwenye vyombo vya habari."},
+    fr:{q:"Quelle est une langue officielle du Kenya en dehors de l'anglais ?", options:["Kikuyu","Luo","Français","Swahili"], hint:"Largement parlée et utilisée dans les médias."},
+    de:{q:"Welche Sprache ist neben Englisch Amtssprache in Kenia?", options:["Kikuyu","Luo","Französisch","Suaheli"], hint:"Weit verbreitet und in den Medien verwendet."},
+    es:{q:"¿Cuál es un idioma oficial de Kenia además del inglés?", options:["Kikuyu","Luo","Francés","Swahili"], hint:"Ampliamente hablado y usado en medios."},
+    zh:{q:"除了英语之外，肯尼亚的官方语言是哪种？", options:["基库尤语","卢奥语","法语","斯瓦西里语"], hint:"广泛使用并出现在媒体中。"},
+    ar:{q:"ما هي اللغة الرسمية في كينيا بجانب الإنجليزية؟", options:["كيكيو","لوو","الفرنسية","السواحلية"], hint:"تتحدث على نطاق واسع وتستخدم في الإعلام."},
+    it:{q:"Quale è una lingua ufficiale del Kenya oltre all'inglese?", options:["Kikuyu","Luo","Francese","Swahili"], hint:"Parlata ampiamente e usata nei media."}
+  }},
+  {id:405, category:'Language', answer:0, translations:{
+    en:{q:"In urban Kenyan youth culture what mixes with Swahili to form Sheng?", options:["English","French","German","Italian"], hint:"Sheng is a blend of Swahili and this language."},
+    sw:{q:"Katika utamaduni wa vijana wa miji nchini Kenya Sheng imechanganywa na lugha gani?", options:["Kiingereza","Kifaransa","Kijerumani","Kitalia"], hint:"Sheng ni mchanganyiko wa Kiswahili na lugha hii."},
+    fr:{q:"Dans la culture urbaine des jeunes kenyans, le Sheng mélange le swahili avec quelle langue ?", options:["Anglais","Français","Allemand","Italien"], hint:"Le Sheng mélange le Swahili et cette langue."},
+    de:{q:"In der urbanen Jugendkultur Kenias mischt sich Sheng mit welcher Sprache?", options:["Englisch","Französisch","Deutsch","Italienisch"], hint:"Sheng ist eine Mischung aus Suaheli und dieser Sprache."},
+    es:{q:"En la cultura juvenil urbana de Kenia, el Sheng mezcla el swahili con qué idioma?", options:["Inglés","Francés","Alemán","Italiano"], hint:"Sheng es una mezcla de swahili y este idioma."},
+    zh:{q:"在肯尼亚城市青年文化中，Sheng 与哪种语言混合形成？", options:["英语","法语","德语","意大利语"], hint:"Sheng 是斯瓦西里语和这种语言的混合。"},
+    ar:{q:"في ثقافة الشباب الحضرية في كينيا، مع أي لغة يختلط Sheng؟", options:["الإنجليزية","الفرنسية","الألمانية","الإيطالية"], hint:"Sheng مزيج من السواحيلية وهذه اللغة."},
+    it:{q:"Nella cultura giovanile urbana keniota lo Sheng si fonde con quale lingua?", options:["Inglese","Francese","Tedesco","Italiano"], hint:"Lo Sheng è un mix di Swahili e questa lingua."}
+  }},
+
+  /* Sheng category (5) */
+  {id:501, category:'Sheng', answer:0, translations:{
+    en:{q:"What does Sheng phrase 'Niaje buda?' most closely mean?", options:["How are you, bro?","Where are you?","No problem","See you later"], hint:"Casual Nairobi greeting."},
+    sw:{q:"'Niaje buda?' ina maana gani?", options:["Habari kaka?","Uko wapi?","Hakuna shida","Tutaonana baadaye"], hint:"Salamu ya kawaida ya Nairobi."},
+    fr:{q:"Que signifie 'Niaje buda?' en Sheng ?", options:["Ça va frère ?","Où es-tu ?","No hay problema","À plus tard"], hint:"Salutation informelle à Nairobi."},
+    de:{q:"Was bedeutet 'Niaje buda?' auf Sheng?", options:["Wie geht's Bruder?","Wo bist du?","Kein Problem","Bis später"], hint:"Umgangssprachliche Begrüßung in Nairobi."},
+    es:{q:"¿Qué significa 'Niaje buda?' en Sheng?", options:["¿Cómo estás hermano?","¿Dónde estás?","No hay problema","Nos vemos"], hint:"Saludo casual de Nairobi."},
+    zh:{q:"Sheng 句子 'Niaje buda?' 大致是什么意思？", options:["你好吗，兄弟？","你在哪里？","没问题","回头见"], hint:"内罗毕的随意问候。"},
+    ar:{q:"ماذا يعني تعبير Sheng 'Niaje buda?'؟", options:["كيف حالك أخي؟","أين أنت؟","لا توجد مشكلة","أراك لاحقًا"], hint:"تحية دارجة في نيروبي."},
+    it:{q:"Cosa significa in Sheng 'Niaje buda?'?", options:["Come stai fratello?","Dove sei?","Nessun problema","Ci vediamo"], hint:"Saluto informale di Nairobi."}
+  }},
+  {id:502, category:'Sheng', answer:1, translations:{
+    en:{q:"In Sheng, what does 'sawa' usually mean?", options:["Run fast","Okay / Fine","Eat now","Run away"], hint:"Often used to agree or accept."},
+    sw:{q:"'Sawa' kwa Sheng inamaanisha nini?", options:["Kimbia haraka","Sawa / Njema","Kula sasa","Kimbia mbali"], hint:"Inatumika kuonyesha kukubaliana."},
+    fr:{q:"En Sheng, que signifie 'sawa' ?", options:["Cours vite","D'accord","Mange maintenant","Fuis"], hint:"Souvent utilisé pour accepter."},
+    de:{q:"Was bedeutet 'sawa' in Sheng?", options:["Lauf schnell","Okay / In Ordnung","Iss jetzt","Lauf weg"], hint:"Wird oft verwendet, um zuzustimmen."},
+    es:{q:"En Sheng, ¿qué significa 'sawa'?", options:["Corre rápido","Vale / Bien","Come ahora","Huye"], hint:"Se usa para estar de acuerdo."},
+    zh:{q:"在 Sheng 中 'sawa' 通常是什么意思？", options:["快跑","好 / 行","现在吃","逃跑"], hint:"常用来表示同意或接受。"},
+    ar:{q:"في Sheng، ماذا يعني 'sawa' عادةً؟", options:["اركض بسرعة","حسنًا / جيد","كل الآن","اهرب"], hint:"غالبًا ما تستخدم للموافقة."},
+    it:{q:"In Sheng cosa significa di solito 'sawa'?", options:["Corri veloce","Ok / Bene","Mangia ora","Scappa"], hint:"Spesso usato per concordare."}
+  }},
+  {id:503, category:'Sheng', answer:2, translations:{
+    en:{q:"Sheng evolves quickly. Which group most influences it?", options:["Older rural elders","Urban youth","Foreign diplomats","Farmers"], hint:"Think Nairobi street culture."},
+    sw:{q:"Sheng hubadilika haraka. Ni nani wanaoathiri zaidi?", options:["Wazee wa vijijini","Vijana wa mijini","Wadiplomasia wa kigeni","Wakulima"], hint:"Fikiri utamaduni wa mitaa wa Nairobi."},
+    fr:{q:"Le Sheng évolue rapidement. Quel groupe l'influence le plus ?", options:["Anciens ruraux","Jeunesse urbaine","Diplomates étrangers","Agriculteurs"], hint:"Pensez à la culture de rue de Nairobi."},
+    de:{q:"Sheng entwickelt sich schnell. Welche Gruppe beeinflusst es am meisten?", options:["Ältere Landälteste","Städtische Jugend","Ausländische Diplomaten","Bauern"], hint:"Denke an die Straßenkultur Nairobis."},
+    es:{q:"Sheng evoluciona rápido. ¿Qué grupo lo influencia más?", options:["Ancianos rurales","Juventud urbana","Diplomáticos extranjeros","Agricultores"], hint:"Piensa en la cultura callejera de Nairobi."},
+    zh:{q:"Sheng 发展很快。哪个群体影响最大？", options:["偏远乡村的长者","城市青年","外籍外交官","农民"], hint:"想想内罗毕的街头文化。"},
+    ar:{q:"يتطور Sheng بسرعة. أي مجموعة تؤثر به أكثر؟", options:["الشيوخ الريفيون","شباب المدن","دبلوماسيون أجانب","المزارعون"], hint:"فكر في ثقافة الشوارع في نيروبي."},
+    it:{q:"Lo Sheng evolve rapidamente. Quale gruppo lo influenza maggiormente?", options:["Anziani rurali","Giovani urbani","Diplomatici stranieri","Contadini"], hint:"Pensa alla cultura di strada di Nairobi."}
+  }},
+  {id:504, category:'Sheng', answer:3, translations:{
+    en:{q:"Which Nairobi slang word means 'friend' or 'buddy'?", options:["Msee","Giriama","Koma","Buda"], hint:"Common Sheng friendly address."},
+    sw:{q:"Ni neno gani la Sheng la Nairobi linalomaanisha 'rafiki'?", options:["Msee","Giriama","Koma","Buda"], hint:"Tumia kwa kuadhibu rafiki."},
+    fr:{q:"Quel mot d'argot de Nairobi signifie 'ami' ?", options:["Msee","Giriama","Koma","Buda"], hint:"Adresse amicale courante en Sheng."},
+    de:{q:"Welches Nairobier Slangwort bedeutet 'Freund'?", options:["Msee","Giriama","Koma","Buda"], hint:"Gängige freundliche Anrede im Sheng."},
+    es:{q:"¿Qué palabra del argot de Nairobi significa 'amigo'?", options:["Msee","Giriama","Koma","Buda"], hint:"Tratamiento amistoso común en Sheng."},
+    zh:{q:"内罗毕俚语中哪个词意味着“朋友”？", options:["Msee","Giriama","Koma","Buda"], hint:"Sheng 中常用的友好称呼。"},
+    ar:{q:"أي كلمة عامية في نيروبي تعني 'صديق'؟", options:["Msee","Giriama","Koma","Buda"], hint:"نداء ودي شائع في Sheng."},
+    it:{q:"Quale parola dello slang di Nairobi significa 'amico'?", options:["Msee","Giriama","Koma","Buda"], hint:"Vocativo amichevole comune in Sheng."}
+  }},
+  {id:505, category:'Sheng', answer:0, translations:{
+    en:{q:"If someone says 'Niko poa' in Sheng, they mean:", options:["I'm fine","I'm running","I'm hungry","I'm busy"], hint:"Poa = good/cool."},
+    sw:{q:"'Mimi niko poa' kwenye Sheng maana yake ni:", options:["Niko sawa","Ninakimbia","Ninakula","Nina shughuli"], hint:"'Poa' = nzuri / poa."},
+    fr:{q:"Si quelqu'un dit 'Niko poa' en Sheng, cela signifie :", options:["Je vais bien","Je cours","J'ai faim","Je suis occupé"], hint:"'Poa' = bien/cool."},
+    de:{q:"Wenn jemand 'Niko poa' in Sheng sagt, meint er:", options:["Mir geht's gut","Ich renne","Ich habe Hunger","Ich bin beschäftigt"], hint:"'Poa' = gut/cool."},
+    es:{q:"Si alguien dice 'Niko poa' en Sheng, significa:", options:["Estoy bien","Estoy corriendo","Tengo hambre","Estoy ocupado"], hint:"'Poa' = bien / genial."},
+    zh:{q:"如果有人用 Sheng 说 'Niko poa'，他们的意思是：", options:["我很好","我在跑步","我饿了","我很忙"], hint:"Poa = 好 / 酷。"},
+    ar:{q:"إذا قال شخص 'Niko poa' في Sheng، فإنه يعني:", options:["أنا بخير","أنا أركض","أنا جائع","أنا مشغول"], hint:"Poa = جيد/رائع."},
+    it:{q:"Se qualcuno dice 'Niko poa' in Sheng, intende:", options:["Sto bene","Sto correndo","Ho fame","Sono occupato"], hint:"'Poa' = bene/fico."}
+  }}
+];
+
+/* Fun facts: 10 items with translations */
+const FUNFACTS = [
+  {id:'f1', en:"Nairobi is Kenya’s capital and a major financial hub in East Africa.", sw:"Nairobi ni mji mkuu wa Kenya na kitovu cha fedha East Africa.", fr:"Nairobi est la capitale du Kenya et un grand centre financier de l'Afrique de l'Est.", de:"Nairobi ist die Hauptstadt Kenias und ein wichtiges Finanzzentrum Ostafrikas.", es:"Nairobi es la capital de Kenia y un importante centro financiero de África Oriental.", zh:"内罗毕是肯尼亚的首都，也是东非的重要金融中心。", ar:"نيروبي هي عاصمة كينيا ومركز مالي مهم في شرق أفريقيا.", it:"Nairobi è la capitale del Kenya e un importante centro finanziario dell'Africa orientale."},
+  {id:'f2', en:"Mombasa is a historic port city on Kenya’s Indian Ocean coast and home to Fort Jesus.", sw:"Mombasa ni mji wa bandari wa kihistoria kwenye pwani ya Kenya.", fr:"Mombasa est une ville portuaire historique sur la côte de l'océan Indien.", de:"Mombasa ist eine historische Hafenstadt an der Küste Kenias.", es:"Mombasa es una histórica ciudad portuaria en la costa del Océano Índico de Kenia.", zh:"蒙巴萨是肯尼亚印度洋沿岸的历史港口城市，耶稣堡所在地。", ar:"مومباسا هي مدينة ميناء تاريخية على ساحل المحيط الهندي في كينيا ومقر حصن جيسوس.", it:"Mombasa è una storica città portuale sulla costa dell'Oceano Indiano del Kenya, sede del Fort Jesus."},
+  {id:'f3', en:"Eliud Kipchoge is a Kenyan marathoner considered among the greatest ever.", sw:"Eliud Kipchoge ni mwanariadha wa mbio za marathon kutoka Kenya.", fr:"Eliud Kipchoge est un marathonien kényan considéré parmi les meilleurs.", de:"Eliud Kipchoge ist ein kenianischer Marathonläufer, einer der Größten.", es:"Eliud Kipchoge es un maratonista keniano considerado entre los mejores.", zh:"埃利乌德·基普乔格是被认为史上最伟大的肯尼亚马拉松运动员之一。", ar:"إليود كيبشوجي عداء ماراثون كيني يعتبر من أعظم العصور.", it:"Eliud Kipchoge è un maratoneta keniota considerato tra i più grandi."},
+  {id:'f4', en:"Wangari Maathai founded the Green Belt Movement and won the Nobel Peace Prize.", sw:"Wangari Maathai alianzisha Green Belt Movement na alipata Tuzo ya Amani ya Nobel.", fr:"Wangari Maathai a fondé le Green Belt Movement et a reçu le prix Nobel de la paix.", de:"Wangari Maathai gründete die Green Belt Movement und gewann den Friedensnobelpreis.", es:"Wangari Maathai fundó el Green Belt Movement y ganó el Nobel de la Paz.", zh:"旺加里·玛塔伊创立绿色腰带运动并获得诺贝尔和平奖。", ar:"أسست وانغاري ماثاي حركة الحزام الأخضر وفازت بجائزة نوبل للسلام.", it:"Wangari Maathai ha fondato il Green Belt Movement e ha vinto il Nobel per la pace."},
+  {id:'f5', en:"Nyama choma (grilled meat) is a central social food in Kenya, often served with kachumbari.", sw:"Nyama choma ni chakula cha kijamii nchini Kenya, mara nyingi huambatana na kachumbari.", fr:"Nyama choma (viande grillée) est un plat social central au Kenya.", de:"Nyama choma (gegrilltes Fleisch) ist ein zentrales Gemeinschaftsessen in Kenia.", es:"Nyama choma (carne a la parrilla) es un alimento social central en Kenia.", zh:"Nyama choma（烤肉）是肯尼亚重要的社交食物，常配卡春巴里调味。", ar:"Nyama choma (اللحم المشوي) طعام اجتماعي مركزي في كينيا غالبًا ما يقدم مع الكاتشومباري.", it:"Nyama choma (carne alla griglia) è un alimento sociale centrale in Kenya, spesso servito con kachumbari."},
+  {id:'f6', en:"The Maasai are well-known for their beadwork and distinctive dress.", sw:"Wamaasai wanajulikana kwa uchoraji wa shanga na mavazi yao maalumu.", fr:"Les Maasai sont connus pour leur travail de perles et leurs tenues distinctives.", de:"Die Maasai sind bekannt für ihre Perlenarbeit und ihre typische Kleidung.", es:"Los Maasai son conocidos por su trabajo con cuentas y vestimenta distintiva.", zh:"马赛人以珠饰工艺和独特服饰著称。", ar:"الماساي معروفون بعملهم بالخرز وملابسهم المميزة.", it:"I Maasai sono famosi per le loro perline e i loro abiti distintivi."},
+  {id:'f7', en:"Lamu Town is a UNESCO World Heritage Site with old Swahili architecture.", sw:"Mji wa Lamu ni tovuti ya urithi wa dunia ya UNESCO.", fr:"La ville de Lamu est un site du patrimoine mondial de l'UNESCO.", de:"Die Stadt Lamu ist ein UNESCO-Weltkulturerbe mit alter Swahili-Architektur.", es:"La ciudad de Lamu es Patrimonio de la Humanidad de la UNESCO.", zh:"拉穆镇是联合国教科文组织世界遗产，保留着古老的斯瓦西里建筑。", ar:"مدينة لامو موقع تراث عالمي لليونسكو وتضم عمارة سواحلية قديمة.", it:"La città di Lamu è un sito UNESCO con antica architettura Swahili."},
+  {id:'f8', en:"Tea and coffee estates are important to Kenya's economy and exports.", sw:"Shamba za chai na kahawa ni muhimu kwa uchumi wa Kenya.", fr:"Les plantations de thé et de café sont importantes pour l'économie kényane.", de:"Tee- und Kaffeeplantagen sind wichtig für Kenias Wirtschaft.", es:"Las plantaciones de té y café son importantes para la economía de Kenia.", zh:"茶园和咖啡庄园对肯尼亚经济和出口非常重要。", ar:"مزارع الشاي والقهوة مهمة لاقتصاد كينيا وصادراتها.", it:"Le piantagioni di tè e caffè sono importanti per l'economia del Kenya."},
+  {id:'f9', en:"Ngũgĩ wa Thiong'o is a celebrated Kenyan writer known worldwide.", sw:"Ngũgĩ wa Thiong'o ni mwandishi maarufu wa Kenya.", fr:"Ngũgĩ wa Thiong'o est un écrivain kényan célébré.", de:"Ngũgĩ wa Thiong'o ist ein weltbekannter kenianischer Schriftsteller.", es:"Ngũgĩ wa Thiong'o es un escritor keniano celebrado mundialmente.", zh:"恩古吉·瓦·提翁戈是享誉世界的肯尼亚作家。", ar:"Ngũgĩ wa Thiong'o كاتب كيني مشهور عالمياً.", it:"Ngũgĩ wa Thiong'o è uno scrittore keniota celebrato a livello mondiale."},
+  {id:'f10', en:"The Great Wildebeest Migration reaches parts of Kenya's Maasai Mara each year.", sw:"Uhamaji mkubwa wa nyumbu hupitia sehemu za Maasai Mara nchini Kenya kila mwaka.", fr:"La grande migration des gnous atteint chaque année une partie du Maasai Mara au Kenya.", de:"Die Große Gnu-Wanderung erreicht jedes Jahr Teile des Maasai Mara.", es:"La Gran Migración de Ñus alcanza partes del Maasai Mara de Kenia cada año.", zh:"每年角马大迁徙会到达肯尼亚的马赛马拉部分地区。", ar:"تصل هجرة الحمر الوحشية الكبرى إلى أجزاء من ماساي مارا في كينيا كل عام.", it:"La Grande Migrazione degli gnu raggiunge ogni anno parte del Maasai Mara in Kenya."}
+];
+
+/* -------------------------
+  App State
+--------------------------*/
+let state = {
+  lang: 'en',
+  category: 'All',
+  pool: [], // current pool for chosen category
+  game: [], // chosen 5 questions for run
+  selections: [], // -1 unanswered, -2 skipped, 0..n selected index
+  currentIndex: 0,
+  score: 0,
+  skipRemain: 3,
+  funIndex: 0,
+  funTimer: null
+};
+
+/* --------- DOM refs ---------- */
+const langSelect = document.getElementById('langSelect');
+const titleEl = document.getElementById('title');
+const subEl = document.getElementById('sub');
+const introEl = document.getElementById('intro');
+const startBtn = document.getElementById('startBtn');
+const funBtn = document.getElementById('funBtn');
+const funWrap = document.getElementById('funWrap');
+const carouselCard = document.getElementById('carouselCard');
+const prevFactBtn = document.getElementById('prevFact');
+const nextFactBtn = document.getElementById('nextFact');
+const carouselTip = document.getElementById('carouselTip');
+
+const categoryRow = document.getElementById('categoryRow');
+const questionText = document.getElementById('questionText');
+const optionsBox = document.getElementById('options');
+const progressBar = document.getElementById('progress');
+const qIndexEl = document.getElementById('qIndex');
+const runningScoreEl = document.getElementById('runningScore');
+const hintBtn = document.getElementById('hintBtn');
+const hintArea = document.getElementById('hintArea');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const resultArea = document.getElementById('resultArea');
+const startArea = document.getElementById('gameArea');
+
+/* -------------------------
+  Initialization
+--------------------------*/
+function initLangSelect(){
+  LANGS.forEach(l=>{
+    const opt = document.createElement('option');
+    opt.value = l.code; opt.textContent = l.label;
+    langSelect.appendChild(opt);
+  });
+  langSelect.value = state.lang;
+  langSelect.addEventListener('change', ()=>{
+    setLanguage(langSelect.value);
+  });
+}
+function setLanguage(code){
+  state.lang = code;
+  // set UI strings
+  const u = UI[code] || UI['en'];
+  titleEl.textContent = u.title;
+  subEl.textContent = u.sub;
+  introEl.textContent = u.intro;
+  startBtn.textContent = u.start;
+  funBtn.textContent = u.fun;
+  hintBtn.textContent = u.hint;
+  updateSkipLabel();
+  carouselTip.textContent = {
+    en:"Sit back — the carousel will show tasty, surprising facts. Click arrows to explore faster.",
+    sw:"Kaa tayari — carousel itaonyesha mambo ya kuvutia. Bonyeza mshale kuchunguza.",
+    fr:"Installez-vous — le carrousel affiche faits surprenants. Cliquez sur les flèches.",
+    de:"Lehnen Sie sich zurück — das Karussell zeigt interessante Fakten. Pfeile zum Vor-/Zurückblättern.",
+    es:"Relájate: el carrusel mostrará datos rápidos. Usa las flechas para explorar.",
+    zh:"稍事休息 — 走马灯会显示有趣的事实。点击箭头快速查看。",
+    ar:"استرخِ — ستعرض الدائرة حقائق مثيرة. استخدم الأسهم للاستكشاف بسرعة.",
+    it:"Rilassati — il carosello mostrerà fatti interessanti. Usa le frecce per esplorare."
+  }[code] || carouselTip.textContent;
+  // re-render sample / game text to chosen language
+  if(state.game.length) renderQuestion();
+  else showSampleForCategory(state.category);
+  renderFunFact();
+  renderCategories();
+  renderResultIfVisible();
+  // stop narration and re-enable as needed
+  window.speechSynthesis && window.speechSynthesis.cancel();
+}
+
+/* categories derived from QUESTIONS */
+function getCategories(){
+  const s = new Set(QUESTIONS.map(q=>q.category));
+  return ['All', ...Array.from(s)];
+}
+function renderCategories(){
+  categoryRow.innerHTML = '';
+  const cats = getCategories();
+  cats.forEach(cat=>{
+    const b = document.createElement('button');
+    b.className = 'cat-btn' + (state.category===cat ? ' active' : '');
+    b.textContent = cat;
+    b.addEventListener('click', ()=>{ selectCategory(cat); }, {passive:true});
+    categoryRow.appendChild(b);
+  });
+}
+function selectCategory(cat){
+  // stop narration
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  state.category = cat;
+  renderCategories();
+  // prepare a pool for category and show a sample immediately
+  state.pool = (cat === 'All') ? QUESTIONS.slice() : QUESTIONS.filter(q=> q.category === cat);
+  showSampleForCategory(cat);
+  // If a run was prepared, re-prepare it from this category (so Start will pick from this)
+  if(state.game.length) {
+    prepareGame();
+    renderQuestion();
+  }
+}
+
+/* show a sample question (random) from current category */
+function showSampleForCategory(cat){
+  const pool = (cat === 'All') ? QUESTIONS : QUESTIONS.filter(q=> q.category === cat);
+  if(!pool.length){ questionText.textContent = 'No sample.'; optionsBox.innerHTML = ''; hintArea.style.display='none'; return; }
+  const sample = pool[Math.floor(Math.random()*pool.length)];
+  displayQuestionToDOM(sample, null, true); // null means not part of a run
+}
+
+/* prepare a 5-question run from current pool */
+function prepareGame(){
+  state.skipRemain = 3;
+  updateSkipLabel();
+  // pick random 5 (or all if fewer)
+  const pool = (state.category === 'All') ? QUESTIONS.slice() : QUESTIONS.filter(q=> q.category === state.category);
+  const shuffled = pool.sort(()=>Math.random()-0.5);
+  state.game = shuffled.slice(0,5);
+  state.selections = new Array(state.game.length).fill(-1);
+  state.currentIndex = 0; state.score = 0;
+  // apply translations to the chosen game always available (we included translations)
+  // No need to call external service — q.translations has them.
+  // show first question on renderQuestion()
+}
+
+/* display a question object to DOM; if runQuestionIndex is null => sample-only */
+function displayQuestionToDOM(question, runIndex=null, sample=false){
+  // choose the translation for current language
+  const t = (question.translations && question.translations[state.lang]) ? question.translations[state.lang] : question.translations['en'];
+  questionText.textContent = t.q;
+  optionsBox.innerHTML = '';
+  t.options.forEach((opt, i)=>{
+    const div = document.createElement('div');
+    div.className = 'option' + ((runIndex !== null && state.selections[runIndex]===i) ? ' selected' : '');
+    div.innerHTML = `<strong>${String.fromCharCode(65+i)}.</strong> ${opt}`;
+    // click handler: if running (runIndex !== null) register selection; else do nothing except highlight
+    div.addEventListener('click', ()=> {
+      // only active when a run exists
+      if(state.game.length){
+        // avoid double-select
+        if(state.selections[state.currentIndex] >= 0) return;
+        state.selections[state.currentIndex] = i;
+        // recompute score (kept hidden until end)
+        recomputeScore();
+        // briefly show selection and auto-advance
+        renderQuestion(); // mark selected
+        setTimeout(()=> {
+          if(state.currentIndex < state.game.length - 1){
+            state.currentIndex++; renderQuestion();
+          } else {
+            finishRun();
+          }
+        }, 350);
+      } else {
+        // for sample, just briefly highlight
+        div.classList.add('selected');
+        setTimeout(()=> div.classList.remove('selected'), 600);
+      }
+    }, {passive:true});
+    optionsBox.appendChild(div);
+  });
+  // hide hint area
+  hintArea.style.display = 'none'; hintArea.textContent = '';
+  // update meta if run
+  if(runIndex !== null){
+    qIndexEl.textContent = (state.currentIndex + 1);
+    runningScoreEl.textContent = state.score;
+    progressBar.style.width = `${(state.currentIndex / state.game.length) * 100}%`;
+    // enable/disable prev/next as needed
+    prevBtn.disabled = (state.currentIndex === 0);
+    nextBtn.disabled = (state.currentIndex === state.game.length - 1);
+  } else {
+    qIndexEl.textContent = 0;
+    runningScoreEl.textContent = 0;
+    progressBar.style.width = '0%';
+    prevBtn.disabled = true; nextBtn.disabled = true;
+  }
+}
+
+/* render current question from the run */
+function renderQuestion(){
+  if(!state.game.length){ showSampleForCategory(state.category); return; }
+  const q = state.game[state.currentIndex];
+  displayQuestionToDOM(q, state.currentIndex);
+  // speak current question
+  speakCurrent();
+}
+
+/* recompute score quietly */
+function recomputeScore(){
+  let sc = 0;
+  for(let i=0;i<state.selections.length;i++){
+    if(state.selections[i] >= 0 && state.selections[i] === state.game[i].answer) sc++;
+  }
+  state.score = sc;
+  runningScoreEl.textContent = sc;
+}
+
+/* finish run: show answers, explanations, social buttons, pdf and retake */
+function finishRun(){
+  recomputeScore();
+  const total = state.game.length;
+  const score = state.score;
+  const rating = getRating(score, total);
+  // build result HTML
+  let html = `<div style="padding:10px;background:#fff;border-radius:8px">`;
+  html += `<div style="display:flex;gap:12px;align-items:center"><div style="font-size:28px;font-weight:900;color:var(--green)">${score}/${total}</div><div><strong>${rating.title}</strong><div style="color:var(--muted)">${rating.text}</div></div></div><hr style="margin:10px 0">`;
+  html += `<ol>`;
+  state.game.forEach((q, idx)=>{
+    const t = q.translations[state.lang] || q.translations['en'];
+    const sel = state.selections[idx];
+    const your = sel === -1 ? '<em>No answer</em>' : sel === -2 ? '<em>Skipped</em>' : t.options[sel];
+    const correct = t.options[q.answer];
+    const ok = (sel >= 0 && sel === q.answer) ? '✅' : (sel === -2 ? '⏭️' : '❌');
+    html += `<li style="margin-bottom:12px"><div style="font-weight:700">${t.q}</div><div style="color:var(--muted)">Your: ${your} · Correct: ${correct} ${ok}</div>`;
+    if(t.hint) html += `<div style="margin-top:8px;padding:8px;background:#f7fff8;border-left:4px solid var(--green);border-radius:6px">${t.hint}</div>`;
+    html += `</li>`;
+  });
+  html += `</ol>`;
+  // share icons
+  html += `<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">`;
+  html += `<a class="icon-btn primary" href="#" id="shareWhats" title="WhatsApp" aria-label="WhatsApp">${svgWhatsapp()}</a>`;
+  html += `<a class="icon-btn primary" href="#" id="shareFB" title="Facebook" aria-label="Facebook">${svgFacebook()}</a>`;
+  html += `<a class="icon-btn primary" href="#" id="shareX" title="X" aria-label="X">${svgX()}</a>`;
+  html += `<a class="icon-btn ghost" href="#" id="shareIG" title="Instagram" aria-label="Instagram">${svgIG()}</a>`;
+  html += `<a class="icon-btn ghost" href="#" id="shareTT" title="TikTok" aria-label="TikTok">${svgTT()}</a>`;
+  html += `</div>`;
+  html += `<div style="margin-top:12px;display:flex;gap:10px"><button id="retakeBtn" class="btn">Retake</button><button id="savePdfBtn" class="btn ghost">Save as PDF</button></div>`;
+  html += `</div>`;
+  resultArea.innerHTML = html;
+  resultArea.style.display = 'block';
+  // stop narration
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  // wire shares and actions
+  setTimeout(()=>{ // allow DOM
+    document.getElementById('shareWhats').addEventListener('click',(e)=>{ e.preventDefault(); shareWhatsApp(score, total); });
+    document.getElementById('shareFB').addEventListener('click',(e)=>{ e.preventDefault(); shareFacebook(score, total); });
+    document.getElementById('shareX').addEventListener('click',(e)=>{ e.preventDefault(); shareX(score, total); });
+    document.getElementById('shareIG').addEventListener('click',(e)=>{ e.preventDefault(); window.open('https://www.instagram.com/', '_blank'); });
+    document.getElementById('shareTT').addEventListener('click',(e)=>{ e.preventDefault(); window.open('https://www.tiktok.com/', '_blank'); });
+    document.getElementById('retakeBtn').addEventListener('click', ()=>{ prepareGame(); resultArea.style.display='none'; renderQuestion(); });
+    document.getElementById('savePdfBtn').addEventListener('click', saveAsPDFPrompt);
+  }, 50);
+}
+
+/* rating messages */
+function getRating(score, total){
+  const pct = score/total;
+  if(pct === 1) return {title:"Legend — Nyota ya Historia!", text:"Perfect. You know Kenya inside-out."};
+  if(pct >= 0.9) return {title:"Master — Mtaalamu", text:"Almost perfect. Impressive knowledge."};
+  if(pct >= 0.75) return {title:"Sharp", text:"Very good — keep learning."};
+  if(pct >= 0.5) return {title:"Rising Scholar", text:"Good effort — you're getting there."};
+  return {title:"Friendly Beginner", text:"Nice try — try again and read some fun facts."};
+}
+
+/* Share helpers */
+function shareWhatsApp(score, total){
+  const msg = encodeURIComponent(`I scored ${score}/${total} on Kenya Trivia! Try it: ${location.href}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+function shareFacebook(score, total){
+  const u = encodeURIComponent(location.href);
+  const quote = encodeURIComponent(`I scored ${score}/${total} on Kenya Trivia!`);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${quote}`, '_blank');
+}
+function shareX(score, total){
+  const text = encodeURIComponent(`I scored ${score}/${total} on Kenya Trivia! ${location.href}`);
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+/* SVG icons (small inline) */
+function svgWhatsapp(){ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M20.52 3.48A11.91 11.91 0 0012 0C5.37 0 .02 5.35.02 12c0 2.11.56 4.18 1.61 5.99L0 24l6.25-1.63A11.95 11.95 0 0012 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.19-3.48-8.52zM12 21.6c-1.89 0-3.74-.49-5.34-1.42l-.38-.22-3.71.97.99-3.6-.25-.38A9.6 9.6 0 012.4 12 9.6 9.6 0 0112 2.4c5.29 0 9.6 4.31 9.6 9.6S17.29 21.6 12 21.6z"/><path d="M17.3 14.7l-1.03-.3a.74.74 0 00-.69.18l-.64.66a6.08 6.08 0 01-2.84-2.84l.66-.64a.74.74 0 00.18-.69l-.3-1.03a.74.74 0 00-.72-.52H9.6a.74.74 0 00-.74.74c0 3.58 2.9 6.48 6.48 6.48.41 0 .74-.33.74-.74v-1.06c0-.28-.17-.53-.42-.63z"/></svg>`; }
+function svgFacebook(){ return `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="18" height="18"><path d="M22 12.07C22 6.49 17.52 2 11.94 2S2 6.49 2 12.07c0 4.96 3.66 9.06 8.44 9.88v-6.99H8.31V12.1h2.13V9.8c0-2.1 1.25-3.26 3.14-3.26.91 0 1.86.16 1.86.16v2.05h-1.04c-1.03 0-1.35.64-1.35 1.29V12.1h2.3l-.37 3.86h-1.93v6.99C18.34 21.13 22 17.03 22 12.07z"/></svg>`; }
+function svgX(){ return `<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="18" height="18"><path d="M22.46 6.003c-.77.346-1.6.58-2.47.687a4.28 4.28 0 001.88-2.364 8.57 8.57 0 01-2.71 1.036 4.28 4.28 0 00-7.3 3.9A12.15 12.15 0 013.15 4.8a4.28 4.28 0 001.33 5.71c-.66-.02-1.29-.2-1.84-.5v.05c0 2.13 1.51 3.9 3.5 4.3a4.3 4.3 0 01-1.93.07c.54 1.67 2.11 2.88 3.97 2.92A8.6 8.6 0 012 19.54a12.1 12.1 0 006.56 1.92c7.88 0 12.2-6.53 12.2-12.2l-.01-.56A8.72 8.72 0 0024 6.6a8.46 8.46 0 01-2.54.7z"/></svg>`; }
+function svgIG(){ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#111"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.055 1.97.24 2.427.403.588.21 1.01.463 1.45.903.44.44.694.863.903 1.45.164.457.349 1.258.403 2.427.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.054 1.17-.24 1.97-.403 2.427-.21.588-.463 1.01-.903 1.45-.44.44-.863.694-1.45.903-.457.164-1.258.349-2.427.403-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.054-1.97-.24-2.427-.403-.588-.21-1.01-.463-1.45-.903-.44-.44-.694-.863-.903-1.45-.164-.457-.349-1.258-.403-2.427C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.054-1.17.24-1.97.403-2.427.21-.588.463-1.01.903-1.45.44-.44.863-.694 1.45-.903.457-.164 1.258-.349 2.427-.403C8.416 2.175 8.796 2.163 12 2.163zm0 1.838c-3.17 0-3.548.012-4.79.07-1.03.05-1.588.223-1.958.37-.485.19-.833.416-1.2.783-.367.367-.593.715-.783 1.2-.147.37-.32.928-.37 1.958-.058 1.242-.07 1.62-.07 4.79s.012 3.548.07 4.79c.05 1.03.223 1.588.37 1.958.19.485.416.833.783 1.2.367.367.715.593 1.2.783.37.147.928.32 1.958.37 1.242.058 1.62.07 4.79.07s3.548-.012 4.79-.07c1.03-.05 1.588-.223 1.958-.37.485-.19.833-.416 1.2-.783.367-.367.593-.715.783-1.2.147-.37.32-.928.37-1.958.058-1.242.07-1.62.07-4.79s-.012-3.548-.07-4.79c-.05-1.03-.223-1.588-.37-1.958-.19-.485-.416-.833-.783-1.2-.367-.367-.715-.593-1.2-.783-.37-.147-.928-.32-1.958-.37-1.242-.058-1.62-.07-4.79-.07zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 1.838a4.324 4.324 0 110 8.648 4.324 4.324 0 010-8.648zm6.406-2.58a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>`; }
+function svgTT(){ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="#111"><path d="M16.5 6.5h2.2V3.7h-2.2c-.6 0-1.2.5-1.2 1.2v.4c-2.1 0-3.9 1.7-3.9 3.9 0 2.2 1.7 3.9 3.9 3.9 2.1 0 3.9-1.7 3.9-3.9V9.6c-.5.2-1 .3-1.5.3-.6 0-1.2-.1-1.7-.4V13c0 3.1-2.7 5.6-6 5.6-3.3 0-6-2.5-6-5.6s2.7-5.6 6-5.6c.4 0 .8.1 1.2.1V6.5c0-.9.7-1.6 1.6-1.6z"/></svg>`; }
+
+/* Save as PDF prompt (prints) */
+function saveAsPDFPrompt(){
+  const custom = prompt("Add a custom message to appear at the top of your PDF (optional):", "");
+  if(custom === null) return;
+  const content = `<div style="font-family:Arial;padding:18px"><h1>Kenya Trivia Results</h1><p>${escapeHtml(custom || '')}</p>` + resultArea.innerHTML + `</div>`;
+  const w = window.open('', '_blank');
+  w.document.write(content);
+  w.document.close();
+  w.focus();
+  setTimeout(()=> w.print(), 600);
+}
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* Rating / misc helpers already above */
+
+/* -------------------------
+  Fun facts: render & carousel
+--------------------------*/
+function renderFunFact(){ 
+  if(!FUNFACTS.length) return;
+  const f = FUNFACTS[state.funIndex % FUNFACTS.length];
+  // find translation
+  const text = f[state.lang] || f['en'] || '';
+  carouselCard.textContent = text;
+}
+function startFunCarousel(){
+  if(state.funTimer) clearInterval(state.funTimer);
+  state.funTimer = setInterval(()=> { state.funIndex = (state.funIndex + 1) % FUNFACTS.length; renderFunFact(); }, 4000);
+}
+function stopFunCarousel(){
+  if(state.funTimer){ clearInterval(state.funTimer); state.funTimer = null; }
+}
+
+/* -------------------------
+  Event wiring
+--------------------------*/
+initLangSelect();
+setLanguage(state.lang); // sets UI and sample
+
+renderCategories(); // categories shown
+// initial pool and sample
+state.pool = QUESTIONS.slice();
+showSampleForCategory('All');
+
+/* category click handled in renderCategories -> selectCategory() */
+
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  prepareGame();
+  // scroll to quiz
+  document.getElementById('gameArea').scrollIntoView({behavior:'smooth'});
+  renderQuestion();
+});
+
+document.getElementById('funBtn').addEventListener('click', ()=>{
+  if(funWrap.style.display === 'none' || funWrap.style.display === ''){
+    funWrap.style.display = 'flex'; startFunCarousel(); renderFunFact();
+  } else { funWrap.style.display = 'none'; stopFunCarousel(); }
+});
+prevFactBtn.addEventListener('click', ()=>{ state.funIndex = (state.funIndex - 1 + FUNFACTS.length) % FUNFACTS.length; renderFunFact(); });
+nextFactBtn.addEventListener('click', ()=>{ state.funIndex = (state.funIndex + 1) % FUNFACTS.length; renderFunFact(); });
+
+prevBtn.addEventListener('click', ()=>{ if(state.currentIndex>0){ state.currentIndex--; renderQuestion(); }});
+nextBtn.addEventListener('click', ()=>{ if(state.currentIndex < state.game.length -1){ state.currentIndex++; renderQuestion(); } else finishRun(); });
+
+skipBtn.addEventListener('click', ()=>{
+  if(state.skipRemain <= 0){ alert(getText('No skips left this run.')); return; }
+  state.selections[state.currentIndex] = -2;
+  state.skipRemain--; updateSkipLabel();
+  if(state.currentIndex < state.game.length -1){ state.currentIndex++; renderQuestion(); } else finishRun();
+});
+
+hintBtn.addEventListener('click', ()=>{
+  // show hint for current question if in run, else for sample use first matching sample
+  let q = null;
+  if(state.game.length) q = state.game[state.currentIndex];
+  else {
+    // sample: find a displayed question text match
+    const text = questionText.textContent;
+    q = QUESTIONS.find(item => (item.translations[state.lang] || item.translations['en']).q === text);
+  }
+  if(!q) return;
+  const t = q.translations[state.lang] || q.translations['en'];
+  if(hintArea.style.display === 'none'){ hintArea.textContent = t.hint || ''; hintArea.style.display='block'; }
+  else { hintArea.style.display='none'; hintArea.textContent=''; }
+});
+
+/* update skip label text localized */
+function updateSkipLabel(){
+  const label = UI[state.lang] ? UI[state.lang].skipLabel : UI['en'].skipLabel;
+  skipBtn.textContent = `${label} (${state.skipRemain}/3)`;
+}
+
+/* recomputeScore etc defined earlier */
+
+/* show sample when page changes language or category */
+function showSampleForCategory(cat){
+  const pool = (cat === 'All') ? QUESTIONS : QUESTIONS.filter(q=> q.category === cat);
+  if(!pool.length){ questionText.textContent = getText('No sample questions yet.'); optionsBox.innerHTML=''; hintArea.style.display='none'; return; }
+  const s = pool[Math.floor(Math.random()*pool.length)];
+  displayQuestionToDOM(s, null, true);
+}
+
+/* translations for static messages */
+function getText(key){
+  // Simple quick messages (only used for small alerts)
+  const map = {
+    'No skips left this run.': {
+      en:'No skips left this run.',
+      sw:'Hakuna ruka iliyobaki kwa mzunguko huu.',
+      fr:'Plus de sauts disponibles pour cette session.',
+      de:'Keine Überspringen mehr in diesem Durchlauf.',
+      es:'No quedan saltos en esta ronda.',
+      zh:'本轮没有剩余跳过次数。',
+      ar:'لا توجد محاولات تخطي متبقية لهذه الجولة.',
+      it:'Non ci sono salti rimanenti in questo turno.'
+    }
+  };
+  return (map[key] && map[key][state.lang]) ? map[key][state.lang] : key;
+}
+
+/* narration: speak current question in chosen language */
+function speakCurrent(){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const q = state.game.length ? state.game[state.currentIndex] : null;
+  if(!q) return;
+  const t = q.translations[state.lang] || q.translations['en'];
+  let text = t.q + '. ';
+  t.options.forEach((o,i)=> text += `${String.fromCharCode(65+i)}. ${o}. `);
+  const ut = new SpeechSynthesisUtterance(text);
+  ut.lang = {
+    en:'en-US', sw:'sw-KE', fr:'fr-FR', de:'de-DE', es:'es-ES', zh:'zh-CN', ar:'ar-SA', it:'it-IT'
+  }[state.lang] || 'en-US';
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(x => x.lang && x.lang.startsWith(ut.lang));
+  if(v) ut.voice = v;
+  window.speechSynthesis.speak(ut);
+}
+
+/* small helpers for rendering categories and samples at start */
+renderCategories();
+showSampleForCategory('All');
+
+/* Prepare keyboard support: Enter selects first option if available */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){
+    const first = optionsBox.querySelector('.option');
+    if(first) first.click();
+  }
+});
+
+/* Stop narration when language or category changed: handled in setLanguage and selectCategory via speechSynthesis.cancel() */
+
+/* Utility: render if result visible (ensure UI language updated) */
+function renderResultIfVisible(){
+  if(resultArea.style.display !== 'none'){
+    // nothing to do — result shows translations used already
+  }
+}
+</script>
+</body>
+</html>
